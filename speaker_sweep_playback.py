@@ -10,7 +10,7 @@ speaker.
 @author: tbeleyur
 """
 import sys
-sys.path.append('C:\\Users\\tbeleyur\\Documents\\figuring_out\\python_fieldrecorded_trial')
+sys.path.append('C:\\Users\\tbeleyur\\Documents\\common\\Python_common\\python_fieldrecorder\\')
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
@@ -80,6 +80,7 @@ output_signals = np.float32(np.zeros((fs,5)))
 output_signals[:,0] = sync1s
 output_signals[:,1] = trig1s
 output_signals[:,2] = sync1s*0.5
+output_signals[:,3] = chirp1s*0.25
 output_signals[:,4] = chirp1s
 
 output_signals_norec = np.copy(output_signals)
@@ -99,8 +100,8 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    camera_warmuptime = 50
-    camera_rec_time = 60
+    camera_warmuptime = 10
+    camera_rec_time = 10
     camera_warmdown = 5
     total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     plt.figure(2)
     plt.specgram(rec[:,0],Fs=192000)
 
-    rec_channels = [0,1,2,3,7,19]
+    rec_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
     ch2dev = {'1':range(12),'2':range(12,24)}
     sync2dev = {'1':7,'2':19}
 
@@ -146,7 +147,8 @@ if __name__ == '__main__':
                                                          syncch2device=sync2dev,
                                                          with_sync = True)
     tristar_channels = select_channels(rec_channels,allch_aligned)
-    fname = 'C:\\Users\\tbeleyur\\Documents\\AV_common_positions_test\\actrackdata\\wav\\2018-03-02_001\\Mic'
+    #fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-06-22_003\\Mic'
+    fname = 'C:\\Users\\tbeleyur\\Desktop\\test\\Mic'
     save_as_singlewav_timestamped(tristar_channels,192000, file_start=fname)
 
 
