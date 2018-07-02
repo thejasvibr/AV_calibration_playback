@@ -54,6 +54,8 @@ def create_pbk_signals():
     sweep *= signal.tukey(sweep.size,0.8)
     sweep = np.float32(sweep)
     sweep *= np.linspace(1,1.125,sweep.size)
+    # normalise so values remain between +1/-1
+    sweep *= 1/np.max(sweep)
 
     chirp_silence = np.zeros(fs - sweep.size)
     chirp_pbk = np.float32(np.concatenate((chirp_silence,sweep)))
@@ -93,62 +95,59 @@ S.start()
 q = Queue.Queue()
 
 
-if __name__ == '__main__':
+print('playing back now...')
 
+start_time = time.time()
 
-    print('playing back now...')
-
-    start_time = time.time()
-
-    camera_warmuptime = 10
-    camera_rec_time = 10
-    camera_warmdown = 5
-    total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
+camera_warmuptime = 10
+camera_rec_time = 10
+camera_warmdown = 5
+total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
 
 
-    while time.time()-start_time < total_durn:
-        time_sincestart = time.time() - start_time
+while time.time()-start_time < total_durn:
+    time_sincestart = time.time() - start_time
 
-        if  camera_rec_time+camera_warmuptime > time_sincestart > camera_warmuptime:
+    if  camera_rec_time+camera_warmuptime > time_sincestart > camera_warmuptime:
 
-            underflow = S.write(output_signals)
-            indata, overflow = S.read(fs)
-            q.put(indata)
+        underflow = S.write(output_signals)
+        indata, overflow = S.read(fs)
+        q.put(indata)
 
-            if underflow:
-                raise ValueError('Underflow')
-        else :
-            underflow = S.write(output_signals_norec)
-            if underflow:
-                raise ValueError('Underflow')
+        if underflow:
+            raise ValueError('Underflow')
+    else :
+        underflow = S.write(output_signals_norec)
+        if underflow:
+            raise ValueError('Underflow')
 
 
 
 
 
-    S.stop()
+S.stop()
 
-    all_queueparts = []
-    while not q.empty():
-        all_queueparts.append(q.get())
+all_queueparts = []
+while not q.empty():
+    all_queueparts.append(q.get())
 
-    rec = np.concatenate(all_queueparts)
-    plt.plot(rec[:,0])
+rec = np.concatenate(all_queueparts)
+plt.plot(rec[:,0])
 
-    plt.figure(2)
-    plt.specgram(rec[:,0],Fs=192000)
+plt.figure(2)
+plt.specgram(rec[:,0],Fs=192000)
 
-    rec_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
-    ch2dev = {'1':range(12),'2':range(12,24)}
-    sync2dev = {'1':7,'2':19}
+rec_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
+ch2dev = {'1':range(12),'2':range(12,24)}
+sync2dev = {'1':7,'2':19}
 
-    allch_aligned = timealign_channels(rec,fs=192000,channels2devices=ch2dev,
-                                                         syncch2device=sync2dev,
-                                                         with_sync = True)
-    tristar_channels = select_channels(rec_channels,allch_aligned)
-    #fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-06-22_003\\Mic'
-    fname = 'C:\\Users\\tbeleyur\\Desktop\\test\\Mic'
-    save_as_singlewav_timestamped(tristar_channels,192000, file_start=fname)
+allch_aligned = timealign_channels(rec,fs=192000,channels2devices=ch2dev,
+                                                     syncch2device=sync2dev,
+                                                     with_sync = True)
+tristar_channels = select_channels(rec_channels,allch_aligned)
+#fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-06-22_003\\Mic'
+fname = 'C:\\Users\\tbeleyur\\Desktop\\test\\Mic'
+save_as_singlewav_timestamped(tristar_channels,192000, file_start=fname)
 
 
