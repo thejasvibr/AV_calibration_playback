@@ -27,7 +27,8 @@ def create_pbk_signals():
     '''Create the sync, trigger and sweep for playbacks that will create the
     common positions for camera and mic arrays.
 
-    The sweeps are generated between 16-96 KHz, and are 6 ms long.
+    The sweeps are generated between 16-96 KHz, and are 8 ms long
+	
 
     '''
     fs = 192000
@@ -55,10 +56,11 @@ def create_pbk_signals():
     sweep = np.float32(sweep)
     sweep *= np.linspace(1,1.125,sweep.size)
     # normalise so values remain between +1/-1
-    sweep *= 1/np.max(sweep)
+    sweep *= 1/np.abs(np.max(sweep))
 
-    chirp_silence = np.zeros(fs - sweep.size)
-    chirp_pbk = np.float32(np.concatenate((chirp_silence,sweep)))
+    chirp_silence = np.zeros(int(fs/2.0) - sweep.size)
+    one_chirp_pbk = np.float32(np.concatenate((chirp_silence,sweep)))
+	chirp_pbk = np.tile(one_chirp_pbk, 2)
 
     return(sync_1sec, trig_1sec, chirp_pbk)
 
