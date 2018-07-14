@@ -11,6 +11,7 @@ speaker.
 """
 import sys
 sys.path.append('C:\\Users\\tbeleyur\\Documents\\common\\Python_common\\python_fieldrecorder\\')
+import datetime as dt
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
@@ -60,7 +61,7 @@ def create_pbk_signals():
 
     chirp_silence = np.zeros(int(fs/2.0) - sweep.size)
     one_chirp_pbk = np.float32(np.concatenate((chirp_silence,sweep)))
-	chirp_pbk = np.tile(one_chirp_pbk, 2)
+    chirp_pbk = np.tile(one_chirp_pbk, 2)
 
     return(sync_1sec, trig_1sec, chirp_pbk)
 
@@ -144,12 +145,16 @@ rec_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
 ch2dev = {'1':range(12),'2':range(12,24)}
 sync2dev = {'1':7,'2':19}
 
-allch_aligned = timealign_channels(rec,fs=192000,channels2devices=ch2dev,
-                                                     syncch2device=sync2dev,
-                                                     with_sync = True)
-tristar_channels = select_channels(rec_channels,allch_aligned)
-#fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-06-22_003\\Mic'
-fname = 'C:\\Users\\tbeleyur\\Desktop\\test\\Mic'
-save_as_singlewav_timestamped(tristar_channels,192000, file_start=fname)
+#allch_aligned = timealign_channels(rec,fs=192000,channels2devices=ch2dev,
+#                                                     syncch2device=sync2dev,
+#                                                     with_sync = True)
+#tristar_channels = select_channels(rec_channels,allch_aligned)
+fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-21_003§\\SPKRPLAYBACK_'
+timenow = dt.datetime.now()
+timestamp = timenow.strftime('%Y-%m-%d_%H-%M-%S')
+file_ending = timestamp+'.WAV'
+write_wavfile(rec, fs,fname+file_ending)
+#fname = 'C:\\Users\\tbeleyur\\Desktop\\test\\Mic'
+#save_as_singlewav_timestamped(tristar_channels,192000, file_start=fname)
 
 
