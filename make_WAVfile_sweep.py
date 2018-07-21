@@ -35,7 +35,7 @@ def create_pbk_signals():
     # amplify the last part of the sweep 
     sweep *= np.linspace(1,1.125,sweep.size)
     # normalise so values remain between -1/1
-    sweep *= 1/np.max(sweep)
+    sweep *= 1/np.abs(np.max(sweep))
 
     return(sweep)
 
