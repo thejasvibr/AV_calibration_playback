@@ -17,7 +17,7 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 plt.rcParams['agg.path.chunksize'] = 10000
 from  ADC_delay import timealign_channels,save_as_singlewav_timestamped,\
-            select_channels
+            select_channels, write_wavfile
 import scipy.io.wavfile as WAV
 import sounddevice as sd
 import Queue
@@ -102,8 +102,8 @@ print('playing back now...')
 
 start_time = time.time()
 
-camera_warmuptime = 10
-camera_rec_time = 10
+camera_warmuptime = 20
+camera_rec_time = 90
 camera_warmdown = 5
 total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
@@ -149,7 +149,7 @@ sync2dev = {'1':7,'2':19}
 #                                                     syncch2device=sync2dev,
 #                                                     with_sync = True)
 #tristar_channels = select_channels(rec_channels,allch_aligned)
-fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-21_003§\\SPKRPLAYBACK_'
+fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-14_003\\SPKRPLAYBACK_'
 timenow = dt.datetime.now()
 timestamp = timenow.strftime('%Y-%m-%d_%H-%M-%S')
 file_ending = timestamp+'.WAV'
