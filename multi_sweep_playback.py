@@ -18,7 +18,7 @@ import Queue
 import time
 
 # load the multichip np.array , each 0.2 ms silence+chirp is one row
-multi_chirp_series = np.load('US_9chirp_series_0.2msgaps.npy')
+multi_chirp_series = np.load('US_9chirp_series_0.2msgaps_hf_hackcompensated.npy')
 num_rows = multi_chirp_series.shape[0]
 
 sync_n_trig = np.load('sync_n_trig_0.2ms.npy')
@@ -48,7 +48,7 @@ q = Queue.Queue()
 start_time = time.time()
 
 camera_warmuptime = 1
-camera_rec_time = 10
+camera_rec_time = 20
 camera_warmdown = 1
 total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
@@ -89,7 +89,7 @@ while not q.empty():
 all_chrec = np.concatenate(all_queueparts)
 recording_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
 only_rec_ch = select_channels(recording_channels, all_chrec)
-fname = 'C:\\Users\\tbeleyur\\Desktop\\testing_multichirp.WAV'#'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-14_003\\SPKRPLAYBACK_'
+fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-21_003\\SPKRPLAYBACK_multichirp'
 timenow = dt.datetime.now()
 timestamp = timenow.strftime('%Y-%m-%d_%H-%M-%S')
 file_ending = timestamp+'.WAV'
