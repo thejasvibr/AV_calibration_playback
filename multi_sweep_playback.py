@@ -47,8 +47,8 @@ q = Queue.Queue()
 
 start_time = time.time()
 
-camera_warmuptime = 1
-camera_rec_time = 20
+camera_warmuptime = 20
+camera_rec_time = 90
 camera_warmdown = 1
 total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
@@ -59,7 +59,7 @@ while time.time()-start_time < total_durn:
     time_sincestart = time.time() - start_time
     
     if  camera_rec_time+camera_warmuptime > time_sincestart > camera_warmuptime:
-        chirp_index = np.remainder(i, num_rows-1)
+        chirp_index = np.remainder(i, num_rows)
         y.append([chirp_index,i])
         camrec_output[:,3] = multi_chirp_series[chirp_index,:]*0.25
         camrec_output[:,4] = multi_chirp_series[chirp_index,:]
@@ -89,7 +89,7 @@ while not q.empty():
 all_chrec = np.concatenate(all_queueparts)
 recording_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
 only_rec_ch = select_channels(recording_channels, all_chrec)
-fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-21_003\\SPKRPLAYBACK_multichirp'
+fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-28_003\\SPKRPLAYBACK_multichirp_'
 timenow = dt.datetime.now()
 timestamp = timenow.strftime('%Y-%m-%d_%H-%M-%S')
 file_ending = timestamp+'.WAV'
