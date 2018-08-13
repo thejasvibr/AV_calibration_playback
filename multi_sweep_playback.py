@@ -20,6 +20,7 @@ import time
 # load the multichip np.array , each 0.2 ms silence+chirp is one row
 multi_chirp_series = np.load('US_9chirp_series_0.2msgaps_hf_hackcompensated.npy')
 num_rows = multi_chirp_series.shape[0]
+reduced_numrows = num_rows - 8
 
 sync_n_trig = np.load('sync_n_trig_0.2ms.npy')
 
@@ -38,8 +39,8 @@ camrec_output[:,2] = sync_n_trig[:,0]*0.25
 norec_output[:,0] = sync_n_trig[:,0]
 
 
-S = sd.Stream(samplerate=fs,blocksize = block_size, device = 56,
-                          channels = [24,5] )
+S = sd.Stream(samplerate=fs,blocksize = block_size, device = 64,
+                          channels = [28,5] )
 S.start()
 
 q = Queue.Queue()
@@ -47,8 +48,8 @@ q = Queue.Queue()
 
 start_time = time.time()
 
-camera_warmuptime = 20
-camera_rec_time = 90
+camera_warmuptime = 10
+camera_rec_time = 10
 camera_warmdown = 1
 total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
 
@@ -59,7 +60,7 @@ while time.time()-start_time < total_durn:
     time_sincestart = time.time() - start_time
     
     if  camera_rec_time+camera_warmuptime > time_sincestart > camera_warmuptime:
-        chirp_index = np.remainder(i, num_rows)
+        chirp_index = np.remainder(i, reduced_numrows)
         y.append([chirp_index,i])
         camrec_output[:,3] = multi_chirp_series[chirp_index,:]*0.25
         camrec_output[:,4] = multi_chirp_series[chirp_index,:]
@@ -87,9 +88,9 @@ while not q.empty():
     all_queueparts.append(q.get())
 
 all_chrec = np.concatenate(all_queueparts)
-recording_channels = [0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19]
+recording_channels = range(28)
 only_rec_ch = select_channels(recording_channels, all_chrec)
-fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018\\actrackdata\\wav\\2018-07-28_003\\SPKRPLAYBACK_multichirp_'
+fname = 'C:\\Users\\tbeleyur\\Documents\\fieldwork_2018_002\\actrackdata\\wav\\2018-08-13_001\\SPKRPLAYBACK_multichirp_'
 timenow = dt.datetime.now()
 timestamp = timenow.strftime('%Y-%m-%d_%H-%M-%S')
 file_ending = timestamp+'.WAV'
