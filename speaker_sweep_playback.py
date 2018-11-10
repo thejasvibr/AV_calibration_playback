@@ -102,7 +102,7 @@ print('playing back now...')
 
 start_time = time.time()
 
-camera_warmuptime = 20
+camera_warmuptime = 10
 camera_rec_time = 90
 camera_warmdown = 5
 total_durn = camera_warmuptime + camera_rec_time + camera_warmdown
